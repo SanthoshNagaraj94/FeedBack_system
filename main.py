@@ -58,6 +58,7 @@ elif option=='upload file':
     uploaded_files = st.file_uploader("Choose a file",accept_multiple_files=True)
     
     if uploaded_files:
+        classifier = pipeline("sentiment-analysis")
         for file in uploaded_files:
             df1=pd.read_excel(file)
             flname=str(file.name).strip('.xlsx')
@@ -72,9 +73,11 @@ elif option=='upload file':
             df1['Batch']=batch
             df1['Date']=date
             df1.drop(['Email','Mobile'],axis=1,inplace=True)
-            M_senti=list(map(sentiment,df1['Mentor Feedback']))
+            mmf=df1['Mentor Feedback'].tolist()
+            M_senti=[i['label'] for i in classifier(mmf)]
             df1['Mentor Feedback Sentiment']=M_senti
-            S_senti=list(map(sentiment,df1['Session Feedback']))
+            ssf=df1['Mentor Feedback'].tolist()
+            S_senti=[i['label'] for i in classifier(ssf)]
             df1['Session Feedback Sentiment']=S_senti
             st.dataframe(df1)
             
